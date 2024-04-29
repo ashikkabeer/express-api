@@ -1,7 +1,6 @@
 const { User } = require('../schema/user');
 
 const UserServices = require('./userServices');
-const collegeServices = require('../college/collegeServices');
 class UserControls {
   static updateCoverPicture = async (req, res) => {
     const response = await UserServices.updateCoverPictureService();
@@ -13,7 +12,10 @@ class UserControls {
   static updateProfile = async (req, res) => {
     return await UserServices.updateProfileService();
   };
-
+  static getUsernameFromToken = async (req,res) => {
+    const data = await UserServices.getUserFromToken(req);
+    return res.send(data);
+  }
   static renderEdit = async (req, res, template) => {
     const username = await UserServices.getUsernameFromParams(req);
     if (template === 'editProfile') {

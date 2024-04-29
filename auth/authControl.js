@@ -1,5 +1,4 @@
 const authServices = require("./authServices");
-const collegeServices = require("../college/collegeServices");
 
 class authControls {
   static login = async (req, res) => {

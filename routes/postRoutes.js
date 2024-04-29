@@ -5,7 +5,8 @@ const router = express.Router();
 const PostControls = require('../post/postControl');
 const authMiddlewares = require('../middlewares/authMiddleware');
 const app = express();
-
+const cors = require("cors");
+app.use(cors());
 const multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
@@ -13,10 +14,7 @@ const multer = Multer({
   },
 });
 const tryCatch = require('../util/tryCatch');
-
-//router.use(authMiddlewares.isAuthenticated);
-app.use('/uploads', express.static('uploads'));
+router.use(cors());
+router.get('/', tryCatch(PostControls.retrieveAll));
 router.post('/upload', multer.single('image'), tryCatch(PostControls.create));
-router.get('/upload', tryCatch(PostControls.renderUploadForm));
-router.get('/:page?', tryCatch(PostControls.retrieveAll));
 module.exports = router;

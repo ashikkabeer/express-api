@@ -2,22 +2,22 @@ const { Schema, model } = require("mongoose");
 const postSchema = new Schema({
   title: {
     type: String,
-    required: true,
+    // required: true,
   },
   description: {
     type: String,
-    required: true,
+    // required: true,
   },
   images: {
     type: String,
   },
   authorId: {
     type: Schema.Types.ObjectId,
-    required: true,
+    // required: true,
   },
   authorUsername: {
     type: String,
-    required: true,
+    // required: true,
   },
   upvotes: {
     type: Number,

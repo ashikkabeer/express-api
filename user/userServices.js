@@ -1,25 +1,19 @@
 const authServices = require('../auth/authServices');
 const CloudServices = require('../cloud/cloudServices');
 const UserModels = require('../models/userModels');
-
+const jwt = require('jsonwebtoken');
 
 class UserServices {
   static getUsernameFromParams = (req) => {
     return req.params.username;
   };
-
-  /* Anonymous users: no need for profile photo */
-  
-  // updateCoverPictureService = async () => {};
-  // updateProfilePictureService = async (req) => {
-  //   const username = this.getUsernameFromParams(req);
-  //   const imageUrl = await CloudServices.uploadImagetoCloud(req.file.buffer);
-  //   const user =await UserModels.findUserByIdAndUpdateProfilePhoto(
-  //     username,
-  //     imageUrl
-  //   );
-  //   return user;
-  // };
+static getUserFromToken = async (req) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+  const id = await this.getUserByUsername(decoded.user.username)
+  return {'username':decoded.user.username,'role':decoded.user.role,'userId':id._id}
+}
+;
 
   updateProfileService = async () => {};
   static updatePostList = async (authorId, tweetDataId) => {

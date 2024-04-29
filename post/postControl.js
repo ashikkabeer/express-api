@@ -14,7 +14,7 @@ class PostControls {
   // add the user data in the post schema
   static retrieveAll = async (req, res) => {
     const data = await PostServices.renderAllPostsService(req);
-    console.log(data);
+    console.log('the data from controller', data);
     res.send(data)
   };
 }

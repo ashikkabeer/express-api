@@ -9,7 +9,6 @@ const ChatSchema = new Schema({
   department: { type: String, required: true },
   subject: { type: String, required: true },
   message: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-  userChat: [{ type: Schema.Types.ObjectId, ref: "UserChat" }],
   createdAt: { type: Date, default: Date.now },
 });
 

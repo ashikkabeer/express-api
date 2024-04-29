@@ -1,12 +1,11 @@
 // const CloudServices = require("../cloud/cloudServices");
 const UserServices = require("../user/userServices");
 const PostModels = require("../models/postModels");
-const collegeServices = require("../college/collegeServices");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require('uuid');
-const CloudServices = require("../cloud/cloudServices")
+const CloudControls = require('../cloud/cloudControl')
 class PostServices {
   static  createPostService = async (req, res) => {
     /*
@@ -14,6 +13,7 @@ class PostServices {
       throw new Error('user not authenticated');
     }
     */
+  //  -----------------------------------------///////////////////
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       throw new Error("No token provided");
@@ -46,25 +46,13 @@ class PostServices {
       authorUsername: decodedToken.user.username,
     };
     if (req.file) {
-      const randomUUID = uuidv4().replace(/-/g, '');
-      // -----------------------------------
-      const imagePath = path.join(
-        "C:/Users/ashik/Desktop/mini-project/frontend/public",
-        randomUUID+".jpg"
-      );
-      fs.writeFileSync(imagePath, req.file.buffer);
-      const imageUrl = imagePath;
-      data.images = imageUrl;
-      // data.images = randomUUID;
-
+      const url = await CloudControls.uploadImagetoCloud(req.file.buffer);
+      console.log("image url in the service fun: ", url);
+      data.images = url;
     }
     const post = await PostModels.createPost(data);
     const response = await UserServices.updatePostList(post.authorId, post._id);
-    await collegeServices.updatePostIdsInCollegeDB(
-      post.authorCollegeId,
-      post._id
-    );
-    return response;
+    return post;
   };
 
   static renderAllPostsService = async (req) => {

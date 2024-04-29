@@ -2,7 +2,6 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const { validateUser } = require("../util/dataValidation/validation");
 const jwt = require("jsonwebtoken");
-const collegeServices = require("../college/collegeServices");
 const UserModels = require("../models/userModels");
 
 class authServices {
@@ -37,7 +36,6 @@ class authServices {
   };
 
   static signUpService = async (userData) => {
-    console.log("signup service");
     const salt_rounds = parseInt(process.env.SALT_ROUND);
     const hashedPassword = await this.hashPassword(userData.password, 10);
     let users = {
@@ -60,7 +58,6 @@ class authServices {
       department: userData.department,
     };
 
-    console.log(users);
     const user = await UserModels.createUser(users);
     if (!user) {
       const error = new Error("Signup Failed");

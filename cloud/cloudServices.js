@@ -1,73 +1,75 @@
 require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
-const { Storage } = require("@google-cloud/storage");
-// ------------------------------------
+const admin = require("firebase-admin");
+const {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  getStorage,
+} = require("firebase/storage");
+const { initializeApp } = require("firebase/app");
+var serviceAccount = require("../wave-miniproject-99286e7c8487.json");
+const firebaseConfig = {
+  apiKey: process.env.FB_API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID
+};
 
-const https = require("https");
-const fs = require("fs");
+const firebaseApp = initializeApp(firebaseConfig);
+const storage = getStorage(firebaseApp);
+const NotificationToken = require("../schema/notificationtokens");
 
-const REGION = "sg"; // If German region, set this to an empty string: ''
-const BASE_HOSTNAME = "storage.bunnycdn.com";
-const HOSTNAME = REGION ? `${REGION}.${BASE_HOSTNAME}` : BASE_HOSTNAME;
-const STORAGE_ZONE_NAME = "wave-musaliar";
-const ACCESS_KEY = "e3994ec2-147e-4958-82c6-400245e34e7a";
-
-// ------------------------------------
 class CloudServices {
-  static bunnyStorage = (buffer) => {
-    const readStream = fs.createReadStream(buffer);
+  static addTokenToTopic = async (topic, token) => {
+    NotificationToken.findByIdAndUpdate(topic).then((res) => {
+      res.fcmTokens.push(token);
+      res.save();
+    });
+  };
 
-    const options = {
-      method: "PUT",
-      host: HOSTNAME,
-      path: `/${STORAGE_ZONE_NAME}/${uuidv4().replace(/-/g, '')}`,
-      headers: {
-        AccessKey: ACCESS_KEY,
-        "Content-Type": "application/octet-stream",
+  static sendNotifications = async (topic, user) => {
+    const message = {
+      topic: topic,
+      notification: {
+        body: user + "has sent a message",
+        title: "New Message from Wave",
       },
     };
 
-    const req = https.request(options, (res) => {
-      res.on("data", (chunk) => {
-        console.log(chunk.toString("utf8"));
-      });
-    });
-
-    req.on("error", (error) => {
-      console.error(error);
-    });
-
-    readStream.pipe(req);
+    try {
+      const response = await admin.messaging().send(message);
+      console.log(response.successCount + " messages were sent successfully");
+    } catch (error) {
+      console.log("Error sending message:", error);
+    }
   };
 
-  static uploadImagetoCloudService = (buffer) => {
-    let projectId = process.env.PROJECT_ID;
-    let keyFilename = process.env.KEY_FILE;
+  static uploadImagesToFirebase = async (buffer) => {
+    try {
+      const metadata = {
+        contentType: "image/jpeg",
+      };
 
-    const storage = new Storage({
-      projectId,
-      keyFilename,
-    });
+      // Construct a reference to the storage location where the file will be uploaded
+      const storageRef = ref(storage, `post/${uuidv4()}.jpg`);
 
-    const bucket = storage.bucket("wave_first_project");
-    return new Promise((resolve, reject) => {
-      const filename = uuidv4() + "_post.jpg";
-      console.log("file found... trying to upload", filename);
-      const blob = bucket.file(filename); // storing by uuidv4()
-      const blobStream = blob.createWriteStream();
-      blobStream.on("error", (error) => {
-        console.error("Error while uploading image:", error);
-        reject(error);
-      });
-      blobStream.on("finish", () => {
-        const imageUrl = `https://storage.cloud.google.com/wave_first_project/${filename}`;
-        console.log("Image uploaded successfully:", imageUrl);
-        resolve(imageUrl);
-      });
-      blobStream.end(buffer);
-      console.log("image uploaded and ended");
-    });
+      // Upload the file data to the specified storage location
+      const snapshot = await uploadBytesResumable(storageRef, buffer, metadata);
+
+      console.log("Uploaded a blob or file!");
+
+      // Retrieve the download URL of the uploaded file
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log("File available at", downloadURL);
+
+      return downloadURL;
+    } catch (error) {
+      console.log(error);
+    }
   };
 }
 
-module.exports = new CloudServices();
+module.exports = CloudServices;
