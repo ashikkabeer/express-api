@@ -8,7 +8,6 @@ const {
   getStorage,
 } = require("firebase/storage");
 const { initializeApp } = require("firebase/app");
-var serviceAccount = require("../wave-miniproject-99286e7c8487.json");
 const firebaseConfig = {
   apiKey: process.env.FB_API_KEY,
   authDomain: process.env.AUTH_DOMAIN,
