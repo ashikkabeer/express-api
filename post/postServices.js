@@ -99,6 +99,7 @@ class PostServices {
       description: post.description,
       image: post.images,
       upvotes: post.upvotes,
+      date: post.createdAt.toDateString(),
     }));
     const data = serializedPosts.filter((post) => post !== null);
     return data;

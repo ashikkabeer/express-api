@@ -2,10 +2,18 @@ const authServices = require('../auth/authServices');
 const CloudServices = require('../cloud/cloudServices');
 const UserModels = require('../models/userModels');
 const jwt = require('jsonwebtoken');
-
+const {User} = require('../schema/user')
 class UserServices {
   static getUsernameFromParams = (req) => {
     return req.params.username;
+  };
+  static getMentorsNameService = async (department) => {
+    const mentors = await User.find({department: department, role: 'faculty'});
+    const res = {
+      id: mentors._id,
+      name: mentors.name,
+    }
+    return res
   };
 static getUserFromToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
