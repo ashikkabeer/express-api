@@ -1,6 +1,5 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const { validateUser } = require("../util/dataValidation/validation");
 const jwt = require("jsonwebtoken");
 const UserModels = require("../models/userModels");
 
@@ -25,7 +24,7 @@ class authServices {
   static loginService = async (req) => {
     const user = await UserModels.findUserByUsername(req.body.username);
     await this.comparePassword(req.body.password, user.password);
-    
+
     const token = await this.signToken({
       username: user.username,
       role: user.role,

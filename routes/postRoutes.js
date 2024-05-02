@@ -1,9 +1,9 @@
-const express = require('express');
-const Multer = require('multer');
+const express = require("express");
+const Multer = require("multer");
 
 const router = express.Router();
-const PostControls = require('../post/postControl');
-const authMiddlewares = require('../middlewares/authMiddleware');
+const PostControls = require("../post/postControl");
+const authMiddlewares = require("../middlewares/authMiddleware");
 const app = express();
 const cors = require("cors");
 app.use(cors());
@@ -13,8 +13,17 @@ const multer = Multer({
     fileSize: 1024 * 1024 * 50, // 5 MB
   },
 });
-const tryCatch = require('../util/tryCatch');
+const tryCatch = require("../util/tryCatch");
 router.use(cors());
-router.get('/', tryCatch(PostControls.retrieveAll));
-router.post('/upload', multer.single('image'), tryCatch(PostControls.create));
+router.get(
+  "/",
+  authMiddlewares.isAuthenticated,
+  tryCatch(PostControls.retrieveAll)
+);
+router.post(
+  "/upload",
+  multer.single("image"),
+  authMiddlewares.isAuthenticated,
+  tryCatch(PostControls.create)
+);
 module.exports = router;

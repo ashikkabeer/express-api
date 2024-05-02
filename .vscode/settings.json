@@ -1,0 +1,28 @@
+{
+    // Set the theme to a cool theme of your choice
+    "workbench.colorTheme": "Dark Horizon",
+    // Enable format on save for all files
+    "editor.formatOnSave": true,
+    // Set the tab size to 2 spaces
+    "editor.tabSize": 2,
+    // Enable word wrap
+    "editor.wordWrap": "on",
+    // Show line numbers
+    "editor.lineNumbers": "on",
+    // Enable auto closing brackets
+    "editor.autoClosingBrackets": "always",
+    // Enable auto closing quotes
+    "editor.autoClosingQuotes": "always",
+    // Enable code folding
+    "editor.folding": true,
+    // Enable code lens
+    "editor.codeLens": true,
+    // Enable breadcrumbs
+    "breadcrumbs.enabled": true,
+    // Enable minimap
+    "editor.minimap.enabled": true,
+    // Set the font family
+    "editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+    // Set the font size
+    "editor.fontSize": 14
+}

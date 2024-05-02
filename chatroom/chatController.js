@@ -1,15 +1,9 @@
-const Message = require("../schema/message");
-const jwt = require("jsonwebtoken");
-const Chat = require("../schema/chatroom");
-const NotificationToken = require("../schema/notificationtokens");
-// create a chatroom
-const UserServices = require("../user/userServices");
-const { create } = require("hbs");
+const ChatServices = require("./chatServices");
 class ChatControls {
   static getTokens = async (req, res) => {
     try {
       const id = req.params.roomId;
-      const notificationToken = await NotificationToken.findById(id);
+      const notificationToken = await ChatServices.getTokens(id);
       res.send({ notificationToken });
     } catch (error) {
       console.error("Error getting tokens:", error);
@@ -19,9 +13,7 @@ class ChatControls {
   static addTokens = async (req, res) => {
     try {
       const { fcmTokens, chatroomId } = req.body;
-      const response = await NotificationToken.findByIdAndUpdate(
-        chatroomId
-      ).push({ fcmTokens });
+      const response = await ChatServices.addTokens(fcmTokens, chatroomId);
       res.status(201).send({ response });
     } catch (error) {
       console.error("Error adding tokens:", error);
@@ -30,25 +22,16 @@ class ChatControls {
   };
   static createRoom = async (req, res) => {
     try {
-      const token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const author = decoded.user.username;
-      console.log("decoded:", decoded);
-      const batch = decoded.user.batch;
-      const department = decoded.user.department;
-
-      const { title, description, mentor, subject } = req.body;
-
-      const chat = await Chat.create({
-        title,
-        description,
-        mentor,
-        author,
-        batch,
-        department,
-        subject,
-      });
-      res.status(201).send({ chat });
+      const response = await ChatServices.createRoom(
+        req.body.title,
+        req.body.description,
+        req.body.mentor,
+        req.user.username,
+        req.user.batch,
+        req.user.department,
+        req.body.subject
+      );
+      res.status(201).send({ response });
     } catch (error) {
       console.error("Error creating chatroom:", error);
       res.status(500).json({ error: error.message });
@@ -56,35 +39,21 @@ class ChatControls {
   };
   static getChatHistory = async (req, res) => {
     try {
+      console.log("getChatHistory");
       const id = req.params.roomId;
-      console.log(id);
-      const chatRoom = await Chat.findById(id);
-      console.log(chatRoom);
-      const messageIds = chatRoom.message;
-      console.log("messageId:", messageIds);
-      const messages = await Message.find({ _id: { $in: messageIds } });
-      console.log("messages", messages);
-      res.send({ messages: messages });
+      console.log("id", id);
+      const response = await ChatServices.getChatHistory(id);
+      console.log("messages", response);
+      res.send({ messages: response });
     } catch (error) {
-      console.log("error on getChatHistory", error);
+      res.status(500).json({ error: error.message });
     }
   };
   static getRooms = async (req, res) => {
     try {
-      console.log("in the getRooms function");
-      const token = req.headers.authorization.split(" ")[1];
-      console.log(token);
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const batch = decoded.user.batch;
-      const department = decoded.user.department;
-      console.log(batch, department);
-      let chat;
-      if (!batch) {
-        chat = await Chat.find({ department: department });
-        console.log('no-batch found')
-      } else {
-        chat = await Chat.find({ batch: batch, department: department }).sort({createdAt:-1});
-      }
+      const batch = req.user.batch;
+      const department = req.user.department;
+      const chat = await ChatServices.getRooms(batch, department);
       res.status(200).json({ chat });
     } catch (error) {
       console.error("Error getting chatrooms:", error);

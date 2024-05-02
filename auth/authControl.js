@@ -3,7 +3,6 @@ const authServices = require("./authServices");
 class authControls {
   static login = async (req, res) => {
     const token = await authServices.loginService(req);
-
     if (token) {
       return res.status(200).send({ access_token: token });
     } else {
@@ -19,12 +18,6 @@ class authControls {
       throw new Error("Signup Failed");
     }
   };
-
-  // static logout = async (req, res) => {
-  //   req.session.destroy(() => {
-  //     res.redirect('/');
-  //   });
-  // };
 }
 
 module.exports = authControls;

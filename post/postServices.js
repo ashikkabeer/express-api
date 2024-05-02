@@ -4,16 +4,10 @@ const PostModels = require("../models/postModels");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
-const { v4: uuidv4 } = require('uuid');
-const CloudControls = require('../cloud/cloudControl')
+const { v4: uuidv4 } = require("uuid");
+const CloudControls = require("../cloud/cloudControl");
 class PostServices {
-  static  createPostService = async (req, res) => {
-    /*
-    if (!req.session || !req.session.user || !req.session.user._id) {
-      throw new Error('user not authenticated');
-    }
-    */
-  //  -----------------------------------------///////////////////
+  static createPostService = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       throw new Error("No token provided");
@@ -93,7 +87,7 @@ class PostServices {
         };
       })
     );
-    const serializedPosts = posts.map(post => ({
+    const serializedPosts = posts.map((post) => ({
       id: post._id.toString(), // Convert ObjectId to string
       title: post.title,
       description: post.description,

@@ -11,10 +11,10 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const Message = require("./schema/message");
-const io = new Server(server,{
+const io = new Server(server, {
   cors: {
     origin: "*",
-  }
+  },
 });
 io.on("connection", (socket) => {
   //hia
@@ -22,35 +22,22 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async (data) => {
     try {
       const { chatId, userId, username, role, content, createdAt } = data;
-      // const username = await UserModels.findUserbyId(userId)
-      // const message = { chatId, userId, username, content, role, createdAt };
-
       const res = await Message.create(data);
       io.emit("message", res);
-      //topic, title, user, subject
-      await CloudControls.sendNotifications(chatId,username)
+      await CloudControls.sendNotifications(chatId, username);
       const chat = await Chat.findById(chatId);
       await chat.message.push(res._id);
       await chat.save();
-
     } catch (error) {
       console.error("Error sending message:", error);
     }
   });
-  socket.on('getChatHistory',async () => {
-    //get the chatid
-    // get the id of all the messages from the document
-    // find the messages by their id
-    // send all the messages to the frontend
-    const messages = await Message.find({}).exec()
-    socket.emit('chatHistory',messages);
-  })
-
-  
- 
-
-  socket.on("disconnect", () => {
+  socket.on("getChatHistory", async () => {
+    const messages = await Message.find({}).exec();
+    socket.emit("chatHistory", messages);
   });
+
+  socket.on("disconnect", () => {});
 });
 // -----
 let path = require("path");
@@ -104,10 +91,7 @@ app.use((req, res, next) => {
 
 // Error route
 app.get("/error", (req, res) => {
-  res.status(500).render("error", {
-    pageTitle: "Error",
-    errorMessage: "An error occurred!",
-  });
+  res.status(500);
 });
 
 // catch 404 and forward to error handler
