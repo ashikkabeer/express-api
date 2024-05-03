@@ -20,7 +20,10 @@ class EventServices {
     return event;
   }
 
-  static async deleteEventService() {}
+  static async deleteEventService(eventId) {
+    const event = await Event.findByIdAndDelete(eventId);
+    return event;
+  }
 
   static async getEventService() {
     const events = await Event.find().sort({ date: 1 });

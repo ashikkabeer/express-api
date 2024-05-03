@@ -10,7 +10,7 @@ router.post(
 );
 router.get("/", authMiddlewares.isAuthenticated, EventControls.get);
 router.delete(
-  "/:id",
+  "/:eventId/delete",
   authMiddlewares.isAuthenticated,
   authMiddlewares.isFaculty,
   EventControls.delete

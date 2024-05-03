@@ -15,7 +15,8 @@ class EventControls {
   }
 
   static async delete(req, res) {
-    const response = EventServices.deleteEventService(req);
+    const id = req.params.eventId;
+    const response = EventServices.deleteEventService(id);
     return res.status(200).send(response);
   }
   static async get(req, res) {

@@ -21,5 +21,11 @@ router.get(
   authMiddlewares.isAuthenticated,
   tryCatch(UserControls.userInfo)
 ); //get userinfo
+router.get(
+  "/subjects",
+  authMiddlewares.isAuthenticated,
+  UserControls.getSubjects
+);
+router.post("/subject", UserControls.addSubjects);
 
 module.exports = router;
