@@ -8,16 +8,16 @@ router.post(
   authMiddlewares.isFaculty,
   EventControls.create
 );
-router.get(
-  "/",
-  authMiddlewares.isAuthenticated,
-  authMiddlewares.isFaculty,
-  EventControls.delete
-);
+router.get("/", authMiddlewares.isAuthenticated, EventControls.get);
 router.delete(
   "/:id",
   authMiddlewares.isAuthenticated,
   authMiddlewares.isFaculty,
   EventControls.delete
+);
+router.post(
+  "/:eventId/interest",
+  authMiddlewares.isAuthenticated,
+  EventControls.interested
 );
 module.exports = router;

@@ -2,40 +2,39 @@
 const EventServices = require("./eventServices");
 class EventControls {
   static async create(req, res) {
-    // const authHeader = req.headers.authorization;
-    // if (!authHeader) {
-    //   throw new Error("No token provided");
-    // }
+    console.log("in the create function");
+    console.log("req.body", req.body);
+    console.log("req.user", req.user);
 
-    // const parts = authHeader.split(" ");
-
-    // if (!parts.length === 2) {
-    //   throw new Error("Token error");
-    // }
-
-    // const [scheme, token] = parts;
-
-    // if (!/^Bearer$/i.test(scheme)) {
-    //   throw new Error("Token malformatted");
-    // }
-    const response = EventServices.createEventService(req);
+    const response = await EventServices.createEventService(
+      req.user.username,
+      req.body
+    );
+    console.log(response);
     return res.status(200).send(response);
-    // if (token.user.role == "faculty") {
-    //   const response = EventServices.createEventService(req);
-    //   return res.status(200).send(response);
-    // } else {
-    //   return res.status(401).send("You are not authorized to create an event");
-    // }
   }
 
   static async delete(req, res) {
     const response = EventServices.deleteEventService(req);
-      return res.status(200).send(response);
+    return res.status(200).send(response);
   }
   static async get(req, res) {
-    const response = EventServices.getEventService(req);
+    console.log("in the get function");
+    const response = await EventServices.getEventService();
     res.status(200).send(response);
   }
+  static async interested(req, res) {
+    const eventId = req.params.eventId;
+    const username = req.user.username;
+    const response = await EventServices.interestedService(eventId, username);
+
+    res.status(200).send(response);
+  }
+  static eventInfo = async (req, res) => {
+    const eventId = req.params.id;
+    const event = await EventServices.getEventInfo(eventId);
+    res.status(200).send(event);
+  };
 }
 
 module.exports = EventControls;

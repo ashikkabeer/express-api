@@ -1,3 +1,4 @@
+const { ref } = require("joi");
 const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema({
@@ -9,7 +10,7 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  
+
   location: {
     type: String,
     required: true,
@@ -18,9 +19,14 @@ const eventSchema = new mongoose.Schema({
     type: String,
   },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
   },
+  participant: [
+    {
+      type: String,
+      ref: "User",
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

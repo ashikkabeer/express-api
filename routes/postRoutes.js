@@ -26,4 +26,9 @@ router.post(
   authMiddlewares.isAuthenticated,
   tryCatch(PostControls.create)
 );
+router.post(
+  "/:postId/like",
+  authMiddlewares.isAuthenticated,
+  tryCatch(PostControls.likePost)
+);
 module.exports = router;
